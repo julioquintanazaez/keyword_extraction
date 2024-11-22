@@ -1,0 +1,6 @@
+# Distribution / packaging
+__pycache__/
+keyword/
+
+# Files
+datos_text.txt
