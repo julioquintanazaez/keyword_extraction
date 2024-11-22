@@ -18,6 +18,7 @@ graph = None
 def initialize_bert_model():
   global kw_model 
   # Cargamos una instancia del modelo BERT  
+  # kw_model = KeyBERT(model="all-mpnet-base-v2")  # Instantiate KeyBERT model
   kw_model = KeyBERT()
   print("Modelo inicializado")
 
@@ -64,7 +65,15 @@ async def upload_documents_txt(file: UploadFile = File(...)):
 
       key_dict = {}
       for n, line in enumerate(data_lines):
-        keywords = kw_model.extract_keywords(line, keyphrase_ngram_range=(1, 3), stop_words=None) #, keyphrase_ngram_range=(1, 2), stop_words=None   
+        # stop_words='english' / by default=None 
+        # highlight=False, 
+        # top_n=10
+        # keyphrase_ngram_range=(1, 2), stop_words=None  
+        keywords = kw_model.extract_keywords(line, 
+                                             #keyphrase_ngram_range=(1, 3), 
+                                             highlight=False,
+                                             #top_n=10,
+                                             stop_words='english')  
         key_dict[f"document_{n}"] = keywords    
         # Enlazar keyword que pertenecen a un mismo documento
         for i, a_word in enumerate(keywords):
