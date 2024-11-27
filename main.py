@@ -1,4 +1,5 @@
-from fastapi import FastAPI, File, UploadFile  
+from fastapi import FastAPI, File, UploadFile 
+from fastapi.middleware.cors import CORSMiddleware 
 from keybert import KeyBERT
 import networkx as nx
 
@@ -10,6 +11,15 @@ else:
 
 # Create an instance for the app
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["POST"],
+    allow_headers=["*"],
+    expose_headers=["*"]
+)
 
 # Initializate KeyBERT instance
 kw_model = None
