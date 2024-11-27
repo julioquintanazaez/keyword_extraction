@@ -70,7 +70,7 @@ async def upload_documents_txt(file: UploadFile = File(...)):
         # top_n=10
         # keyphrase_ngram_range=(1, 2), stop_words=None  
         keywords = kw_model.extract_keywords(line, 
-                                             #keyphrase_ngram_range=(1, 3), 
+                                             keyphrase_ngram_range=(1, 3), 
                                              highlight=False,
                                              #top_n=10,
                                              stop_words='english')  
