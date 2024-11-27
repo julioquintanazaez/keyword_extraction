@@ -51,9 +51,12 @@ async def index():
 
 @app.post("/upload_documents_txt/")
 async def upload_documents_txt(file: UploadFile = File(...)):
+    # Obtener el nombre del archivo
+    filename = file.filename    
+    # Extraer la extensión
+    extension = filename.split('.')[-1] if '.' in filename else ''
     # Verificamos que el archivo sea un fichero TXT  
-    
-    if file.content_type != 'text/plain':
+    if extension != 'txt':
         return {"error": f"El archivo debe ser un fichero de texto. {file.content_type}"}
     # Leemos el archivo CSV en un DataFrame de pandas  
     try:
@@ -86,7 +89,7 @@ async def upload_documents_txt(file: UploadFile = File(...)):
                 try:
                   document_att = nx.get_edge_attributes(graph, "document_count")                  
                   att_count_value = document_att[(a_word[0], b_word[0])]
-                  print(f"{a_word[0]} + {b_word[0]}: {att_count_value}")
+                  #print(f"{a_word[0]} + {b_word[0]}: {att_count_value}")
                   graph.add_edge(a_word[0], b_word[0], document_count = (att_count_value + 1))                
                 except Exception as e:
                   return {"error": f"Procesando atributos de la conexión: {str(e)}"}
