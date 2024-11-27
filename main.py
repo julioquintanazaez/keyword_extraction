@@ -51,9 +51,9 @@ async def index():
 
 @app.post("/upload_documents_txt/")
 async def upload_documents_txt(file: UploadFile = File(...)):
-    # Verificamos que el archivo sea un CSV  
+    # Verificamos que el archivo sea un fichero TXT  
     if file.content_type != 'text/plain':
-        return {"error": "El archivo debe ser un CSV."}
+        return {"error": f"El archivo debe ser un CSV. {file.content_type}"}
     # Leemos el archivo CSV en un DataFrame de pandas  
     try:
       contents = await file.read()
