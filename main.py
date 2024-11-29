@@ -42,13 +42,34 @@ def copy_lines(contents):
   count = -1
   data_lines = []
   lines = contents.decode('utf-8').splitlines()
+  flag_first_line = True
+  columns_info = ""
   for line in lines:
-    if line.startswith(">"):                
-      data_lines.append(line)
-      count = count + 1
+    if flag_first_line:  #To skip the first line that contains the columns names
+      columns_info = line
+      flag_first_line = False
     else:
-      data_lines[count] = data_lines[count] + line 
-  return data_lines
+      if line.startswith(">"):   
+        # Split to capture the columns info                    
+        data_lines.append(line)
+        count = count + 1
+      else:
+        data_lines[count] = data_lines[count] + line 
+  return data_lines, columns_info
+
+def get_attributes(data, columns, ini):
+  attributes = {}         
+  for i in range(ini, len(data)):
+    col = columns[i].strip()
+    try:      
+      if data[i] == " ":
+        attributes[col] = "?"
+      else:
+        attributes[col] = data[i].strip()
+    except:
+        attributes[col] = "?"
+
+  return attributes
 
 @app.on_event("startup")
 async def startup_event():
@@ -57,7 +78,21 @@ async def startup_event():
 
 @app.get('/')
 async def index():
-  return { "message": "This is a keyword extraction app with linked words from multiple documents!" }
+  info = """
+    This is a keyword extraction app with linked words from multiple documents!
+    Also, it is capable of handle multiple attributes to add more information to
+    the links. As input the api recieve a csv file with a foxed structure (>, text, from, location).
+    The file used this (>) symbol to especifies the starting point of an line.
+    Example: 
+    >text, from, location
+    >Class overlapping has long been regarded as one of the toughest pervasive 
+    problems in classification. When it is combined with class imbalance problem the situation
+    becomes even more complicated with few works in the literature addressing this combinative 
+    effect., Telegram, Spain
+
+    Also: you can add more atributes, always folowing the csv restrictions.
+  """
+  return {"message": info}
 
 @app.post("/upload_documents_txt/")
 async def upload_documents_txt(file: UploadFile = File(...)):
@@ -71,40 +106,43 @@ async def upload_documents_txt(file: UploadFile = File(...)):
     # Leemos el archivo CSV en un DataFrame de pandas  
     try:
       contents = await file.read()
-      data_lines = copy_lines(contents)
-
+      data_lines, columns = copy_lines(contents)
+      
       # procesamos los datos para extraer las keywords
       if kw_model is None:
         return {"error": "El modelo no está inicializado."} 
 
       key_dict = {}
+      columns = columns.split(",") # Line: ["text", "from", "localization"]  
+      
       for n, line in enumerate(data_lines):
-        # stop_words='english' / by default=None 
-        # highlight=False, 
-        # top_n=10
-        # keyphrase_ngram_range=(1, 2), stop_words=None  
-        keywords = kw_model.extract_keywords(line, 
-                                             keyphrase_ngram_range=(1, 3), 
+        data_ = line.split(",")
+        keywords = kw_model.extract_keywords(data_[0], 
+                                             keyphrase_ngram_range=(1, 2), 
                                              highlight=False,
-                                             #top_n=10,
                                              stop_words='english')  
-        key_dict[f"document_{n}"] = keywords    
+        key_dict[f"document_{n}"] = keywords
+        attributes = get_attributes(data_, columns, 1)   
+      
         # Enlazar keyword que pertenecen a un mismo documento
         for i, a_word in enumerate(keywords):
           for j, b_word in enumerate(keywords):
-            if j > i:
+            if j > i:              
               if graph.has_edge(a_word[0], b_word[0]) != True:
-                graph.add_edge(a_word[0], b_word[0], document_count=1)
+                attributes["document_count"] = 1
+                graph.add_edge(a_word[0], b_word[0], **attributes)
               else:
                 try:
                   document_att = nx.get_edge_attributes(graph, "document_count")                  
                   att_count_value = document_att[(a_word[0], b_word[0])]
                   #print(f"{a_word[0]} + {b_word[0]}: {att_count_value}")
-                  graph.add_edge(a_word[0], b_word[0], document_count = (att_count_value + 1))                
+                  attributes["document_count"] = (att_count_value + 1)
+                  graph.add_edge(a_word[0], b_word[0], **attributes)
                 except Exception as e:
-                  return {"error": f"Procesando atributos de la conexión: {str(e)}"}
+                  return {"error": f"Procesando atributos de la conexión: {str(e)}"}              
 
       list_edges = list(graph.edges(data=True))
       return {"Keywords": key_dict, "Graph": list_edges}
+      
     except Exception as e:
         return {"error": f"No se pudo procesar el archivo: {str(e)}"}
