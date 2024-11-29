@@ -91,6 +91,29 @@ async def index():
     effect., Telegram, Spain
 
     Also: you can add more atributes, always folowing the csv restrictions.
+
+    {"keywords":
+      {
+      "document_0": [
+        [
+          "grouping large",
+          0.5263
+        ]
+      },
+      "graph": [
+          [
+            "grouping large",
+            "data critical",
+            {
+              "from": "Facebook",
+              "location": "Cuba",
+              "Time": "3",
+              "document_count": 1
+            }
+          ]
+      ]
+    }
+
   """
   return {"message": info}
 
