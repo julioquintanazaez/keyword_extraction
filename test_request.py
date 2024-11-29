@@ -27,7 +27,6 @@ with open(absolute_path, 'rb') as file:
 
 if response.status_code == 200:
     print("Existe un resultado positivo")
-    print(response)
 else:
     print("Existe un resultado negativo")
     

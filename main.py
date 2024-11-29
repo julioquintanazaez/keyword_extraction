@@ -140,9 +140,9 @@ async def upload_documents_txt(file: UploadFile = File(...)):
                   graph.add_edge(a_word[0], b_word[0], **attributes)
                 except Exception as e:
                   return {"error": f"Procesando atributos de la conexión: {str(e)}"}              
-
+      
       list_edges = list(graph.edges(data=True))
-      return {"Keywords": key_dict, "Graph": list_edges}
+      return {"keywords": key_dict, "graph": list_edges}
       
     except Exception as e:
         return {"error": f"No se pudo procesar el archivo: {str(e)}"}
