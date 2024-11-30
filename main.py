@@ -164,7 +164,7 @@ async def upload_documents_txt(
                   return {"error": f"Procesando atributos de la conexión: {str(e)}"}              
       
       list_edges = list(graph.edges(data=True))
-      return {"keywords": key_dict, "graph": list_edges}
+      return JSONResponse (content={"keywords": key_dict, "graph": list_edges})
       
     except Exception as e:
         return {"error": f"No se pudo procesar el archivo: {str(e)}"}
