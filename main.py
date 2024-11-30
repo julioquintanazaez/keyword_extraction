@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile 
+from fastapi import FastAPI, File, UploadFile, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware 
 from keybert import KeyBERT
 import networkx as nx
@@ -166,7 +166,19 @@ async def upload_documents_txt(file: UploadFile = File(...)):
         return {"error": f"No se pudo procesar el archivo: {str(e)}"}
     
 @app.post("/check_uploadfile/")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(   
+      file: UploadFile = File(...),
+      accept: str = Header(...),  # Cabecera 'Accept'
+      content_type: str = Header(...),  # Cabecera 'Content-Type'
+    ):
+    # Validar cabeceras
+    if accept != "application/json":
+        raise HTTPException(status_code=400, detail="Cabecera 'Accept' no válida")
+    
+    #if content_type != "multipart/form-data":
+    #    raise HTTPException(status_code=400, detail="Cabecera 'Content-Type' no válida")
+    
+
     content = await file.read()
     # Aquí puedes procesar el archivo como desees
     return JSONResponse(content={"filename": file.filename, "size": len(content)})
