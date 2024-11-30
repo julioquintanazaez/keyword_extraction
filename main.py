@@ -2,6 +2,7 @@ from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware 
 from keybert import KeyBERT
 import networkx as nx
+from fastapi.responses import JSONResponse
 
 import sys
 if sys.version_info[0] < 3: 
@@ -16,7 +17,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["POST"],
+    allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"]
 )
@@ -31,12 +32,6 @@ def initialize_bert_model():
   # kw_model = KeyBERT(model="all-mpnet-base-v2")  # Instantiate KeyBERT model
   kw_model = KeyBERT()
   print("Modelo inicializado")
-
-def initialize_graph():
-  global graph
-  # Cargamos una instancia del Graph 
-  graph = nx.Graph()
-  print("Grafo inicializado")
 
 def copy_lines(contents):
   count = -1
@@ -74,7 +69,6 @@ def get_attributes(data, columns, ini):
 @app.on_event("startup")
 async def startup_event():
   initialize_bert_model()
-  initialize_graph()
 
 @app.get('/')
 async def index():
@@ -117,8 +111,9 @@ async def index():
   """
   return {"message": info}
 
-@app.post("/upload_documents_txt/")
+@app.post("/upload_documents/")
 async def upload_documents_txt(file: UploadFile = File(...)):
+    graph = nx.Graph()
     # Obtener el nombre del archivo
     filename = file.filename    
     # Extraer la extensión
@@ -169,3 +164,14 @@ async def upload_documents_txt(file: UploadFile = File(...)):
       
     except Exception as e:
         return {"error": f"No se pudo procesar el archivo: {str(e)}"}
+    
+@app.post("/check_uploadfile/")
+async def upload_file(file: UploadFile = File(...)):
+    content = await file.read()
+    # Aquí puedes procesar el archivo como desees
+    return JSONResponse(content={"filename": file.filename, "size": len(content)})
+
+# Run the main app.py
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)
