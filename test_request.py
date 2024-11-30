@@ -9,23 +9,29 @@ filename = fileurl + "datos_text_uno.txt"
 file_path = Path(filename)
 
 # Obtener la ruta absoluta
-absolute_path = file_path.resolve()
+file_path = file_path.resolve()
 
-print("Ruta absoluta:", absolute_path)
+print("Ruta absoluta:", file_path)
 
-url = "https://keyword-extraction-graph.onrender.com/upload_documents/"
-localurl = "http://127.0.0.1:8000/upload_documents/"
+run_local = True
+if run_local:
+    url = "http://127.0.0.1:8000/upload_documents/"
+else:
+    url = "https://keyword-extraction-graph.onrender.com/upload_documents/"
 
-with open(absolute_path, 'rb') as file:
-    # Prepare the files and data for the request  
-    print(absolute_path)  
-    files_ = {'file': file}
-    data = {'description': 'Some file'}
-    # Send the POST request
-    response = requests.post(localurl, files=files_, data=data)
+headers = {
+    "Accept": "application/json",
+    #"Content-Type": "multipart/form-data"
+}
+
+with open(str(file_path), 'rb') as f:  # Convertir a string
+    files = {'file': (file_path.name, f, 'text/plain')}  # Usar file_path.name para el nombre
+    response = requests.post(url, files=files, headers=headers)
 
 if response.status_code == 200:
     print("Existe un resultado positivo")
+    response_data = response.json()
+    print("Datos de la respuesta:", response_data)
 else:
     print("Existe un resultado negativo")
     

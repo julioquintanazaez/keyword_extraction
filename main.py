@@ -112,7 +112,11 @@ async def index():
   return {"message": info}
 
 @app.post("/upload_documents/")
-async def upload_documents_txt(file: UploadFile = File(...)):
+async def upload_documents_txt(
+      file: UploadFile = File(...),
+      accept: str = Header(...),  # Cabecera 'Accept'
+      content_type: str = Header(...),  # Cabecera 'Content-Type'
+    ):
     graph = nx.Graph()
     # Obtener el nombre del archivo
     filename = file.filename    
