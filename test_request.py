@@ -3,7 +3,7 @@ from pathlib import Path
 
 # Nombre del archivo
 fileurl = "D:\\DESARROLLO\\PYTHON\\keyword_extraction\\"
-filename = fileurl + "datos_text_uno.txt"
+filename = fileurl + "datos_text.txt"
 
 # Crear un objeto Path
 file_path = Path(filename)
@@ -13,7 +13,7 @@ file_path = file_path.resolve()
 
 print("Ruta absoluta:", file_path)
 
-run_local = True
+run_local = False
 if run_local:
     url = "http://127.0.0.1:8000/upload_documents/"
 else:
@@ -29,7 +29,7 @@ with open(str(file_path), 'rb') as f:  # Convertir a string
     response = requests.post(url, files=files, headers=headers)
 
 if response.status_code == 200:
-    print("Existe un resultado positivo")
+    print(f"Existe un resultado positivo, Run from: {run_local}")
     response_data = response.json()
     print("Datos de la respuesta:", response_data)
 else:
