@@ -70,52 +70,16 @@ def get_attributes(data, columns, ini):
 async def startup_event():
   initialize_bert_model()
 
-@app.get('/')
+@app.get('/app/v1/')
 async def index():
-  info = """
-    This is a keyword extraction app with linked words from multiple documents!
-    Also, it is capable of handle multiple attributes to add more information to
-    the links. As input the api recieve a csv file with a foxed structure (>, text, from, location).
-    The file used this (>) symbol to especifies the starting point of an line.
-    Example: 
-    >text, from, location
-    >Class overlapping has long been regarded as one of the toughest pervasive 
-    problems in classification. When it is combined with class imbalance problem the situation
-    becomes even more complicated with few works in the literature addressing this combinative 
-    effect., Telegram, Spain
-
-    Also: you can add more atributes, always folowing the csv restrictions.
-
-    {"keywords":
-      {
-      "document_0": [
-        [
-          "grouping large",
-          0.5263
-        ]
-      },
-      "graph": [
-          [
-            "grouping large",
-            "data critical",
-            {
-              "from": "Facebook",
-              "location": "Cuba",
-              "Time": "3",
-              "document_count": 1
-            }
-          ]
-      ]
-    }
-
-  """
+  info = "This is a keyword extraction app with linked words from multiple documents!"
   return {"message": info}
 
-@app.post("/upload_documents/")
+@app.post("/app/v1/upload_documents/")
 async def upload_documents_txt(
       file: UploadFile = File(...),
-      accept: str = Header(...),  # Cabecera 'Accept'
-      content_type: str = Header(...),  # Cabecera 'Content-Type'
+      #accept: str = Header(...),  # Cabecera 'Accept'
+      #content_type: str = Header(...),  # Cabecera 'Content-Type'
     ):
     graph = nx.Graph()
     # Obtener el nombre del archivo
