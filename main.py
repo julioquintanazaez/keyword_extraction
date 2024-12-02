@@ -78,7 +78,7 @@ async def index():
 @app.post("/app/v1/upload_documents/")
 async def upload_documents_txt(
       file: UploadFile = File(...),
-      #accept: str = Header(...),  # Cabecera 'Accept'
+      accept: str = Header(...),  # Cabecera 'Accept'
       #content_type: str = Header(...),  # Cabecera 'Content-Type'
     ):
     graph = nx.Graph()

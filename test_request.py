@@ -15,9 +15,9 @@ print("Ruta absoluta:", file_path)
 
 run_local = False
 if run_local:
-    url = "http://127.0.0.1:8000/app/v1/upload_documents/"
+    url = "http://127.0.0.1:8000/upload_documents/"
 else:
-    url = "https://keyword-extraction-graph.onrender.com/app/v1/upload_documents/"
+    url = "https://keyword-extraction-graph.onrender.com/upload_documents/"
 
 headers = {
     "Accept": "application/json",
