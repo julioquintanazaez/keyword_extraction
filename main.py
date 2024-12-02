@@ -70,12 +70,12 @@ def get_attributes(data, columns, ini):
 async def startup_event():
   initialize_bert_model()
 
-@app.get('/app/v1/')
+@app.get('/')
 async def index():
   info = "This is a keyword extraction app with linked words from multiple documents!"
   return {"message": info}
 
-@app.post("/app/v1/upload_documents/")
+@app.post("/upload_documents/")
 async def upload_documents_txt(
       file: UploadFile = File(...),
       accept: str = Header(...),  # Cabecera 'Accept'
