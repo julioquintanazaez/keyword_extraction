@@ -72,7 +72,7 @@ async def startup_event():
 
 @app.get('/')
 async def index():
-  info = "This is a keyword extraction app with linked words from multiple documents!"
+  info = "This is a keyword app extraction app with linked words from multiple documents!"
   return {"message": info}
 
 @app.post("/upload_documents/")

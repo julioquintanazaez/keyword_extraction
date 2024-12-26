@@ -13,7 +13,7 @@ file_path = file_path.resolve()
 
 print("Ruta absoluta:", file_path)
 
-run_local = False
+run_local = True
 if run_local:
     url = "http://127.0.0.1:8000/upload_documents/"
 else:
